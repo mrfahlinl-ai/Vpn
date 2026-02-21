@@ -1,0 +1,5 @@
+{
+  "name": "Nexus VPN",
+  "description": "A minimalist, high-performance VPN dashboard with global server selection and real-time privacy monitoring.",
+  "requestFramePermissions": ["geolocation"]
+}
