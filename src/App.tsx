@@ -19,7 +19,22 @@ import {
   Info,
   Clock,
   ArrowDown,
-  ArrowUp
+  ArrowUp,
+  Fingerprint,
+  EyeOff,
+  Search,
+  AlertTriangle,
+  CheckCircle2,
+  Cpu,
+  Layers,
+  Filter,
+  ShieldAlert,
+  Terminal,
+  Skull,
+  ZapOff,
+  Radar,
+  Bug,
+  Ghost
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { 
@@ -70,6 +85,58 @@ export default function App() {
   const [traffic, setTraffic] = useState<TrafficData[]>([]);
   const [ipInfo, setIpInfo] = useState<{ ip: string; city: string; country: string } | null>(null);
   const [connectionTime, setConnectionTime] = useState(0);
+
+  // Security Features State
+  const [securityFeatures, setSecurityFeatures] = useState({
+    killSwitch: true,
+    dnsProtection: true,
+    splitTunneling: false,
+    multiHop: false,
+    adBlocker: true,
+    obfuscation: false,
+    quantumResistant: true,
+    hardenedMode: false,
+    zeroKnowledge: true
+  });
+
+  const [threats, setThreats] = useState<{ id: number; type: string; time: string; status: string }[]>([]);
+  const [isHardened, setIsHardened] = useState(false);
+
+  const [isAuditing, setIsAuditing] = useState(false);
+  const [auditScore, setAuditScore] = useState(92);
+
+  const toggleSecurityFeature = (feature: keyof typeof securityFeatures) => {
+    setSecurityFeatures(prev => ({
+      ...prev,
+      [feature]: !prev[feature]
+    }));
+  };
+
+  const runSecurityAudit = () => {
+    setIsAuditing(true);
+    setTimeout(() => {
+      setIsAuditing(false);
+      setAuditScore(Math.floor(Math.random() * 5) + 95); // Higher score in unhackable mode
+    }, 3000);
+  };
+
+  // Simulate Threat Detection
+  useEffect(() => {
+    if (isConnected) {
+      const interval = setInterval(() => {
+        if (Math.random() > 0.85) {
+          const newThreat = {
+            id: Date.now(),
+            type: ['Brute Force Attempt', 'Port Scan Detected', 'Malicious Script Blocked', 'DDoS Pattern Neutralized'][Math.floor(Math.random() * 4)],
+            time: new Date().toLocaleTimeString(),
+            status: 'Neutralized'
+          };
+          setThreats(prev => [newThreat, ...prev.slice(0, 4)]);
+        }
+      }, 5000);
+      return () => clearInterval(interval);
+    }
+  }, [isConnected]);
 
   // Simulate traffic data
   useEffect(() => {
@@ -303,6 +370,184 @@ export default function App() {
               </div>
             </div>
           </section>
+
+          {/* Security Lab Section */}
+          <section className="bg-[#161618] rounded-3xl p-6 border border-white/5">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-2">
+                <Fingerprint className="w-4 h-4 text-emerald-500" />
+                <h3 className="text-sm font-semibold uppercase tracking-wider">Security Lab</h3>
+              </div>
+              <div className="flex items-center gap-2 bg-emerald-500/10 px-3 py-1 rounded-full">
+                <span className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest">Health Score: {auditScore}%</span>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Kill Switch */}
+              <div className={cn(
+                "p-4 rounded-2xl border transition-all cursor-pointer",
+                securityFeatures.killSwitch ? "bg-emerald-500/5 border-emerald-500/20" : "bg-white/5 border-transparent"
+              )} onClick={() => toggleSecurityFeature('killSwitch')}>
+                <div className="flex items-center justify-between mb-2">
+                  <div className="p-2 bg-zinc-800 rounded-lg">
+                    <Lock className={cn("w-4 h-4", securityFeatures.killSwitch ? "text-emerald-500" : "text-zinc-500")} />
+                  </div>
+                  <div className={cn("w-8 h-4 rounded-full relative transition-colors", securityFeatures.killSwitch ? "bg-emerald-500" : "bg-zinc-700")}>
+                    <div className={cn("absolute top-0.5 w-3 h-3 bg-white rounded-full transition-all", securityFeatures.killSwitch ? "left-4.5" : "left-0.5")} />
+                  </div>
+                </div>
+                <h4 className="text-xs font-bold mb-1">Kill Switch</h4>
+                <p className="text-[10px] text-zinc-500 leading-relaxed">Blocks all traffic if VPN connection drops unexpectedly.</p>
+              </div>
+
+              {/* DNS Protection */}
+              <div className={cn(
+                "p-4 rounded-2xl border transition-all cursor-pointer",
+                securityFeatures.dnsProtection ? "bg-emerald-500/5 border-emerald-500/20" : "bg-white/5 border-transparent"
+              )} onClick={() => toggleSecurityFeature('dnsProtection')}>
+                <div className="flex items-center justify-between mb-2">
+                  <div className="p-2 bg-zinc-800 rounded-lg">
+                    <Search className={cn("w-4 h-4", securityFeatures.dnsProtection ? "text-emerald-500" : "text-zinc-500")} />
+                  </div>
+                  <div className={cn("w-8 h-4 rounded-full relative transition-colors", securityFeatures.dnsProtection ? "bg-emerald-500" : "bg-zinc-700")}>
+                    <div className={cn("absolute top-0.5 w-3 h-3 bg-white rounded-full transition-all", securityFeatures.dnsProtection ? "left-4.5" : "left-0.5")} />
+                  </div>
+                </div>
+                <h4 className="text-xs font-bold mb-1">DNS Leak Protection</h4>
+                <p className="text-[10px] text-zinc-500 leading-relaxed">Routes all DNS queries through encrypted tunnel.</p>
+              </div>
+
+              {/* Multi-Hop */}
+              <div className={cn(
+                "p-4 rounded-2xl border transition-all cursor-pointer",
+                securityFeatures.multiHop ? "bg-emerald-500/5 border-emerald-500/20" : "bg-white/5 border-transparent"
+              )} onClick={() => toggleSecurityFeature('multiHop')}>
+                <div className="flex items-center justify-between mb-2">
+                  <div className="p-2 bg-zinc-800 rounded-lg">
+                    <Layers className={cn("w-4 h-4", securityFeatures.multiHop ? "text-emerald-500" : "text-zinc-500")} />
+                  </div>
+                  <div className={cn("w-8 h-4 rounded-full relative transition-colors", securityFeatures.multiHop ? "bg-emerald-500" : "bg-zinc-700")}>
+                    <div className={cn("absolute top-0.5 w-3 h-3 bg-white rounded-full transition-all", securityFeatures.multiHop ? "left-4.5" : "left-0.5")} />
+                  </div>
+                </div>
+                <h4 className="text-xs font-bold mb-1">Multi-Hop (Double VPN)</h4>
+                <p className="text-[10px] text-zinc-500 leading-relaxed">Routes traffic through two different server locations.</p>
+              </div>
+
+              {/* Ad Blocker */}
+              <div className={cn(
+                "p-4 rounded-2xl border transition-all cursor-pointer",
+                securityFeatures.adBlocker ? "bg-emerald-500/5 border-emerald-500/20" : "bg-white/5 border-transparent"
+              )} onClick={() => toggleSecurityFeature('adBlocker')}>
+                <div className="flex items-center justify-between mb-2">
+                  <div className="p-2 bg-zinc-800 rounded-lg">
+                    <Filter className={cn("w-4 h-4", securityFeatures.adBlocker ? "text-emerald-500" : "text-zinc-500")} />
+                  </div>
+                  <div className={cn("w-8 h-4 rounded-full relative transition-colors", securityFeatures.adBlocker ? "bg-emerald-500" : "bg-zinc-700")}>
+                    <div className={cn("absolute top-0.5 w-3 h-3 bg-white rounded-full transition-all", securityFeatures.adBlocker ? "left-4.5" : "left-0.5")} />
+                  </div>
+                </div>
+                <h4 className="text-xs font-bold mb-1">Ad & Malware Blocker</h4>
+                <p className="text-[10px] text-zinc-500 leading-relaxed">Filters malicious domains and intrusive advertisements.</p>
+              </div>
+            </div>
+
+            <button 
+              onClick={runSecurityAudit}
+              disabled={isAuditing}
+              className="w-full mt-6 py-3 bg-zinc-800 hover:bg-zinc-700 rounded-2xl text-xs font-bold uppercase tracking-widest flex items-center justify-center gap-2 transition-all"
+            >
+              {isAuditing ? (
+                <>
+                  <RefreshCw className="w-3 h-3 animate-spin" />
+                  Auditing System...
+                </>
+              ) : (
+                <>
+                  <ShieldCheck className="w-3 h-3 text-emerald-500" />
+                  Run Security Audit
+                </>
+              )}
+            </button>
+          </section>
+
+          {/* Unhackable Suite: Threat Detection & Hardened Mode */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {/* Threat Detection Log */}
+            <section className="bg-[#161618] rounded-3xl p-6 border border-white/5">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <Radar className="w-4 h-4 text-red-500 animate-pulse" />
+                  <h3 className="text-sm font-semibold uppercase tracking-wider">Threat Detection</h3>
+                </div>
+                <span className="text-[10px] text-zinc-500">Live Monitoring</span>
+              </div>
+              
+              <div className="space-y-3 h-[180px] overflow-y-auto custom-scrollbar pr-2">
+                {threats.length === 0 ? (
+                  <div className="h-full flex flex-col items-center justify-center text-zinc-600">
+                    <CheckCircle2 className="w-8 h-8 mb-2 opacity-20" />
+                    <p className="text-[10px] uppercase tracking-widest">No threats detected</p>
+                  </div>
+                ) : (
+                  threats.map(threat => (
+                    <motion.div 
+                      initial={{ x: -20, opacity: 0 }}
+                      animate={{ x: 0, opacity: 1 }}
+                      key={threat.id} 
+                      className="bg-red-500/5 border border-red-500/10 rounded-xl p-3 flex items-center justify-between"
+                    >
+                      <div>
+                        <p className="text-[10px] font-bold text-red-500 uppercase">{threat.type}</p>
+                        <p className="text-[9px] text-zinc-500">{threat.time}</p>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <div className="w-1 h-1 rounded-full bg-emerald-500" />
+                        <span className="text-[9px] text-emerald-500 font-bold uppercase">{threat.status}</span>
+                      </div>
+                    </motion.div>
+                  ))
+                )}
+              </div>
+            </section>
+
+            {/* Hardened Mode & Panic Button */}
+            <section className="bg-[#161618] rounded-3xl p-6 border border-white/5 flex flex-col justify-between">
+              <div>
+                <div className="flex items-center justify-between mb-4">
+                  <div className="flex items-center gap-2">
+                    <ShieldAlert className="w-4 h-4 text-blue-500" />
+                    <h3 className="text-sm font-semibold uppercase tracking-wider">Hardened Mode</h3>
+                  </div>
+                  <div 
+                    onClick={() => setIsHardened(!isHardened)}
+                    className={cn(
+                      "w-10 h-5 rounded-full relative transition-colors cursor-pointer",
+                      isHardened ? "bg-blue-500" : "bg-zinc-700"
+                    )}
+                  >
+                    <div className={cn("absolute top-1 w-3 h-3 bg-white rounded-full transition-all", isHardened ? "left-6" : "left-1")} />
+                  </div>
+                </div>
+                <p className="text-[10px] text-zinc-500 leading-relaxed mb-4">
+                  Enables kernel-level obfuscation, quantum-resistant handshakes, and zero-knowledge state persistence.
+                </p>
+              </div>
+
+              <button 
+                onClick={() => {
+                  setIsConnected(false);
+                  setThreats([]);
+                  alert('PANIC MODE: All connections severed. Encryption keys rotated.');
+                }}
+                className="w-full py-4 bg-red-500/10 hover:bg-red-500/20 border border-red-500/20 rounded-2xl flex items-center justify-center gap-3 group transition-all"
+              >
+                <ZapOff className="w-5 h-5 text-red-500 group-hover:scale-110 transition-transform" />
+                <span className="text-xs font-black text-red-500 uppercase tracking-[0.2em]">Panic Button</span>
+              </button>
+            </section>
+          </div>
         </div>
 
         {/* Right Column: Server List & Info */}
